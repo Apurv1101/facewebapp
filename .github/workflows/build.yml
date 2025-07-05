@@ -43,5 +43,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: facewebapp-apk
-        path: |
-          app/platforms/android/**/*.apk
+        path: app/platforms/android/**/*.apk
