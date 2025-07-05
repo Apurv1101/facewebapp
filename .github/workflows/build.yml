@@ -32,7 +32,7 @@ jobs:
         cordova plugin add cordova-plugin-android-permissions
         cordova plugin add cordova-plugin-whitelist
 
-    - name: 📝 Overwrite config.xml with localhost WebView config
+    - name: 📝 Write config.xml
       run: |
         cat <<EOF > app/config.xml
         <?xml version="1.0" encoding="UTF-8"?>
@@ -56,13 +56,19 @@ jobs:
         </widget>
         EOF
 
-    - name: 🛠️ Build APK (Verbose)
+    - name: 🧱 Prepare Gradle Wrapper
+      run: |
+        cd app/platforms/android
+        chmod +x gradlew
+
+    - name: 🛠️ Build APK (Gradle Verbose)
       run: |
         cd app
-        cordova build android --verbose
+        ./platforms/android/gradlew assembleDebug --stacktrace --info || true
 
     - name: 🔍 Find APK
-      run: find app -name "*.apk" || echo "❌ No APK found"
+      run: |
+        find app -name "*.apk" || echo "❌ No APK found"
 
     - name: 📤 Upload APK
       uses: actions/upload-artifact@v4
