@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget id="com.example.cameraapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>CameraApp</name>
+    <description>Camera HTML APK</description>
+    <author email="dev@example.com">Developer</author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-navigation href="*" />
+    <platform name="android">
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-permission">
+            <uses-permission android:name="android.permission.CAMERA" />
+        </edit-config>
+    </platform>
+</widget>
