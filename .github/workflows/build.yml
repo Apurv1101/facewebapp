@@ -21,9 +21,10 @@ jobs:
     - name: 📦 Install Cordova
       run: npm install -g cordova
 
-    - name: 📁 Create Cordova Project
+    - name: 📁 Create Cordova Project and Add Plugins
       run: |
         cordova create app com.example.localwebview LocalWebView
+        cp app/config.xml app/config.xml
         cd app
         cordova platform add android@12
         cordova plugin add cordova-plugin-camera
@@ -32,45 +33,10 @@ jobs:
         cordova plugin add cordova-plugin-android-permissions
         cordova plugin add cordova-plugin-whitelist
 
-    - name: 📝 Write config.xml
-      run: |
-        cat <<EOF > app/config.xml
-        <?xml version="1.0" encoding="UTF-8"?>
-        <widget id="com.example.localwebview" version="1.0.0"
-            xmlns="http://www.w3.org/ns/widgets"
-            xmlns:cdv="http://cordova.apache.org/ns/1.0"
-            xmlns:android="http://schemas.android.com/apk/res/android">
-          <name>LocalWebView</name>
-          <description>WebView that loads localhost</description>
-          <content src="http://127.0.0.1:5000/" />
-          <access origin="*" />
-          <allow-navigation href="http://127.0.0.1:*" />
-          <preference name="AndroidInsecureFileModeEnabled" value="true" />
-          <platform name="android">
-            <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-permission">
-              <uses-permission android:name="android.permission.CAMERA" />
-              <uses-permission android:name="android.permission.INTERNET" />
-            </edit-config>
-          </platform>
-          <plugin name="cordova-plugin-whitelist" />
-        </widget>
-        EOF
-
-    - name: 🔍 Debug: List App Folder
-      run: ls -R app
-
-    - name: 🛠️ Build Cordova APK (verbose output)
+    - name: 🛠️ Build APK (Verbose)
       run: |
         cd app
-        cordova build android --verbose || exit 1
+        cordova build android --verbose
 
-    - name: 🔍 Debug: Search for APKs
-      run: |
-        echo "Searching for APK..."
-        find app -name "*.apk" || echo "❌ No APK generated."
-
-    - name: 📤 Upload APK Artifact (if found)
-      uses: actions/upload-artifact@v4
-      with:
-        name: localwebview-apk
-        path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+    - name: 🔍 Find APK
+      run: find app -name "*.apk" || ech*
