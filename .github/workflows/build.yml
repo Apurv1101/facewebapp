@@ -6,14 +6,14 @@ on:
 
 jobs:
   build:
-    name: Build Cordova App
+    name: Cordova Android Build
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout Repository
+    - name: 📥 Checkout Code
       uses: actions/checkout@v3
 
-    - name: 🟢 Set up Node.js
+    - name: 🟢 Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 18
@@ -25,14 +25,14 @@ jobs:
       run: |
         cordova create app com.example.localwebview LocalWebView
         cd app
-        cordova platform add android
+        cordova platform add android@12
         cordova plugin add cordova-plugin-camera
         cordova plugin add cordova-plugin-media-capture
         cordova plugin add cordova-plugin-media
         cordova plugin add cordova-plugin-android-permissions
         cordova plugin add cordova-plugin-whitelist
 
-    - name: 📝 Write config.xml (loads localhost)
+    - name: 📝 Write config.xml
       run: |
         cat <<EOF > app/config.xml
         <?xml version="1.0" encoding="UTF-8"?>
@@ -41,7 +41,7 @@ jobs:
             xmlns:cdv="http://cordova.apache.org/ns/1.0"
             xmlns:android="http://schemas.android.com/apk/res/android">
           <name>LocalWebView</name>
-          <description>WebView that loads phone localhost</description>
+          <description>WebView that loads localhost</description>
           <content src="http://127.0.0.1:5000/" />
           <access origin="*" />
           <allow-navigation href="http://127.0.0.1:*" />
@@ -56,20 +56,21 @@ jobs:
         </widget>
         EOF
 
-    - name: 📦 Show Cordova Folder Structure
+    - name: 🔍 Debug: List App Folder
       run: ls -R app
 
-    - name: 🛠️ Build APK (with debug info)
+    - name: 🛠️ Build Cordova APK (verbose output)
       run: |
         cd app
-        cordova build android --verbose --stacktrace || true
+        cordova build android --verbose || exit 1
 
-    - name: 🔍 List All APKs
+    - name: 🔍 Debug: Search for APKs
       run: |
-        find app -name "*.apk" || echo "No APK found"
+        echo "Searching for APK..."
+        find app -name "*.apk" || echo "❌ No APK generated."
 
-    - name: 📤 Upload APK
+    - name: 📤 Upload APK Artifact (if found)
       uses: actions/upload-artifact@v4
       with:
         name: localwebview-apk
-        path: "**/*.apk"
+        path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
