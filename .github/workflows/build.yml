@@ -2,7 +2,8 @@ name: Build Cordova APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
@@ -10,38 +11,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout Repository
+    - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: 🟢 Set up Node.js
+    - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: 18
 
-    - name: 📦 Install Cordova
+    - name: Install Cordova
       run: npm install -g cordova
 
-    - name: 📁 Create Cordova Project
+    - name: Create Cordova Project
       run: |
         cordova create app com.example.facewebapp FaceWebApp
-        cp -r www/* app/www/
+        cp -r www app/www
         cp config.xml app/config.xml
         cd app
         cordova platform add android
-        cordova plugin add cordova-plugin-camera cordova-plugin-media-capture cordova-plugin-media cordova-plugin-android-permissions
+        cordova plugin add cordova-plugin-camera
+        cordova plugin add cordova-plugin-media-capture
+        cordova plugin add cordova-plugin-media
+        cordova plugin add cordova-plugin-android-permissions
 
-    - name: 🛠️ Build APK (Verbose)
+    - name: Build APK
       run: |
         cd app
-        cordova build android --verbose
+        cordova build android
 
-    - name: 🔍 Debug: List APK files
+    - name: List APK files (debug step)
       run: |
-        find app/platforms/android/ -type f -name "*.apk"
+        find app/platforms/android/ -type f -name "*.apk" || echo "No APK found"
 
-    - name: 📤 Upload All APKs
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: facewebapp-apk
-        path: app/platforms/android/**/*.apk
- v
+        path: app/platforms/android/app/build/outputs/apk/**/*.apk
