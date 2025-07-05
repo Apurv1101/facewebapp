@@ -21,7 +21,7 @@ jobs:
     - name: 📦 Install Cordova
       run: npm install -g cordova
 
-    - name: 📁 Create Cordova Project and Add Plugins
+    - name: 📁 Create Cordova Project & Add Plugins
       run: |
         cordova create app com.example.localwebview LocalWebView
         cd app
@@ -32,7 +32,7 @@ jobs:
         cordova plugin add cordova-plugin-android-permissions
         cordova plugin add cordova-plugin-whitelist
 
-    - name: 📝 Write config.xml
+    - name: 📝 Overwrite config.xml
       run: |
         cat <<EOF > app/config.xml
         <?xml version="1.0" encoding="UTF-8"?>
@@ -56,15 +56,10 @@ jobs:
         </widget>
         EOF
 
-    - name: 🧱 Prepare Gradle Wrapper
-      run: |
-        cd app/platforms/android
-        chmod +x gradlew
-
-    - name: 🛠️ Build APK (Gradle Verbose)
+    - name: 🛠️ Build APK (Verbose)
       run: |
         cd app
-        ./platforms/android/gradlew assembleDebug --stacktrace --info || true
+        cordova build android --verbose || true
 
     - name: 🔍 Find APK
       run: |
