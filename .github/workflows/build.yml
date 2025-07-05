@@ -44,3 +44,4 @@ jobs:
       with:
         name: facewebapp-apk
         path: app/platforms/android/**/*.apk
+ v
