@@ -26,24 +26,27 @@ jobs:
         cordova create app com.example.facewebapp FaceWebApp
         cp -r www app/www
         cp config.xml app/config.xml
+
+    - name: ➕ Add Cordova Plugins
+      run: |
         cd app
         cordova platform add android
         cordova plugin add cordova-plugin-camera
         cordova plugin add cordova-plugin-media-capture
         cordova plugin add cordova-plugin-media
         cordova plugin add cordova-plugin-android-permissions
+        cordova plugin add cordova-plugin-whitelist
 
     - name: 🛠️ Build APK
       run: |
         cd app
         cordova build android --verbose
 
-    - name: 🔍 Find APK path (for debug)
+    - name: 🔍 Find APK
       run: |
-        echo "Looking for APK..."
-        find . -type f -name "*.apk"
+        find . -name "*.apk"
 
-    - name: 📤 Upload All APKs (auto-detect path)
+    - name: 📤 Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: facewebapp-apk
