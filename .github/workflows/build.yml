@@ -23,7 +23,7 @@ jobs:
 
     - name: 📁 Create Cordova Project
       run: |
-        cordova create app com.example.cameraapp CameraApp
+        cordova create app com.example.facewebapp FaceWebApp
         cp -r www/* app/www/
         cp config.xml app/config.xml
         cd app
@@ -38,5 +38,5 @@ jobs:
     - name: 📤 Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: camera-app-apk
+        name: facewebapp-apk
         path: app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
