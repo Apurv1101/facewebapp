@@ -6,8 +6,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     name: Build Cordova App
+    runs-on: ubuntu-latest
 
     steps:
     - name: 📥 Checkout Repository
@@ -23,12 +23,7 @@ jobs:
 
     - name: 📁 Create Cordova Project
       run: |
-        cordova create app com.example.facewebapp FaceWebApp
-        cp -r www app/www
-        cp config.xml app/config.xml
-
-    - name: ➕ Add Cordova Plugins
-      run: |
+        cordova create app com.example.localwebview LocalWebView
         cd app
         cordova platform add android
         cordova plugin add cordova-plugin-camera
@@ -37,17 +32,44 @@ jobs:
         cordova plugin add cordova-plugin-android-permissions
         cordova plugin add cordova-plugin-whitelist
 
-    - name: 🛠️ Build APK
+    - name: 📝 Write config.xml (loads localhost)
+      run: |
+        cat <<EOF > app/config.xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <widget id="com.example.localwebview" version="1.0.0"
+            xmlns="http://www.w3.org/ns/widgets"
+            xmlns:cdv="http://cordova.apache.org/ns/1.0"
+            xmlns:android="http://schemas.android.com/apk/res/android">
+          <name>LocalWebView</name>
+          <description>WebView that loads phone localhost</description>
+          <content src="http://127.0.0.1:5000/" />
+          <access origin="*" />
+          <allow-navigation href="http://127.0.0.1:*" />
+          <preference name="AndroidInsecureFileModeEnabled" value="true" />
+          <platform name="android">
+            <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/uses-permission">
+              <uses-permission android:name="android.permission.CAMERA" />
+              <uses-permission android:name="android.permission.INTERNET" />
+            </edit-config>
+          </platform>
+          <plugin name="cordova-plugin-whitelist" />
+        </widget>
+        EOF
+
+    - name: 📦 Show Cordova Folder Structure
+      run: ls -R app
+
+    - name: 🛠️ Build APK (with debug info)
       run: |
         cd app
-        cordova build android --verbose
+        cordova build android --verbose --stacktrace || true
 
-    - name: 🔍 Find APK
+    - name: 🔍 List All APKs
       run: |
-        find . -name "*.apk"
+        find app -name "*.apk" || echo "No APK found"
 
     - name: 📤 Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: facewebapp-apk
+        name: localwebview-apk
         path: "**/*.apk"
